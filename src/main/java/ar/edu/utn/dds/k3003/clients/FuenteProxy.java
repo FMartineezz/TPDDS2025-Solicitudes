@@ -9,6 +9,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.javalin.http.HttpStatus;
 import lombok.SneakyThrows;
 import org.springframework.context.annotation.Profile;
+import org.springframework.stereotype.Service;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.jackson.JacksonConverterFactory;
@@ -17,6 +18,7 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 @Profile("deploy")
+@Service
 public class FuenteProxy implements FachadaFuente {
 
     private final String endpoint;
