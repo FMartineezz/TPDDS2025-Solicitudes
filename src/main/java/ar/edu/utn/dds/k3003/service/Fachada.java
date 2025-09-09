@@ -34,28 +34,15 @@ public class Fachada implements FachadaSolicitudes {
 
     @Override
     public SolicitudDTO agregar(SolicitudDTO solicitudDTO) {
-        HechoDTO hecho;
-        try {
-            hecho = fuente.buscarHechoXId(solicitudDTO.hechoId());
-        } catch (Exception e) {
-            // Imprime la excepción original en la consola
-            e.printStackTrace();
-            // Lanza una nueva excepción con un mensaje más claro
-            throw new RuntimeException("Error al comunicarse con el servicio de hechos.", e);
+        //validar que este asociada a un echo
+        if(solicitudDTO.hechoId()== null ){
+            throw new NoSuchElementException("La solicitud con id " + solicitudDTO.id() + "no tiene hecho asociado.");
         }
-
+        // validar existencia de hecho
+        HechoDTO hecho = fuente.buscarHechoXId(solicitudDTO.hechoId());
         if (hecho == null) {
             throw new NoSuchElementException("El hecho con id " + solicitudDTO.hechoId() + " no existe.");
         }
-        //validar que este asociada a un echo
-        //if(solicitudDTO.hechoId()== null ){
-          //  throw new NoSuchElementException("La solicitud con id " + solicitudDTO.id() + "no tiene hecho asociado.");
-        //}
-        // validar existencia de hecho
-        //HechoDTO hecho = fuente.buscarHechoXId(solicitudDTO.hechoId());
-        //if (hecho == null) {
-          //  throw new NoSuchElementException("El hecho con id " + solicitudDTO.hechoId() + " no existe.");
-        //}
         // validar duplicado
         List<SolicitudDTO> solicitudesPorHecho = buscarSolicitudXHecho(solicitudDTO.hechoId());
         for (SolicitudDTO existente : solicitudesPorHecho) {
