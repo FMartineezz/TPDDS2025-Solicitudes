@@ -35,9 +35,10 @@ public class InMemoryRepository implements SolicitudRepository {
     }
 
     @Override
-    public Optional<Solicitud> findById(String id) {
-        return this.findAll().stream().
-                filter(solicitud ->String.valueOf(solicitud.getId()).equals(id)).findFirst();
+    public Optional<Solicitud> findById(Long id) {
+        return this.findAll().stream()
+                .filter(solicitud -> Objects.equals(solicitud.getId(), id))
+                .findFirst();
     }
 
     @Override

@@ -7,7 +7,7 @@ import java.util.Optional;
 public interface SolicitudRepository {
         List<Solicitud> findAll();
         Optional<List<Solicitud>> findByHechoId (String hechoId);
-        Optional<Solicitud> findById(String id);
+        Optional<Solicitud> findById(Long id);
         Solicitud save(Solicitud solicitud);
         void deleteAll();
 }

@@ -10,8 +10,8 @@ import retrofit2.http.Path;
 @Profile("deploy")
 public interface FuenteRetrofitClient {
 
-    @GET("hechos/{id}")
-    Call<HechoDTO> get(@Path("id") String id);
+    @GET("hecho/{nombre}")
+    Call<HechoDTO> get(@Path("nombre") String nombre);
 
     @PATCH("hechos/{id}/censurar")
     Call<Void> censurar(@Path("id") String id);

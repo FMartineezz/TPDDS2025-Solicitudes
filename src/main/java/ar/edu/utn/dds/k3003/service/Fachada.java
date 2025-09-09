@@ -34,15 +34,28 @@ public class Fachada implements FachadaSolicitudes {
 
     @Override
     public SolicitudDTO agregar(SolicitudDTO solicitudDTO) {
-        //validar que este asociada a un echo
-        if(solicitudDTO.hechoId()== null ){
-            throw new NoSuchElementException("La solicitud con id " + solicitudDTO.id() + "no tiene hecho asociado.");
+        HechoDTO hecho;
+        try {
+            hecho = fuente.buscarHechoXId(solicitudDTO.hechoId());
+        } catch (Exception e) {
+            // Imprime la excepción original en la consola
+            e.printStackTrace();
+            // Lanza una nueva excepción con un mensaje más claro
+            throw new RuntimeException("Error al comunicarse con el servicio de hechos.", e);
         }
-        // validar existencia de hecho
-        HechoDTO hecho = fuente.buscarHechoXId(solicitudDTO.hechoId());
+
         if (hecho == null) {
             throw new NoSuchElementException("El hecho con id " + solicitudDTO.hechoId() + " no existe.");
         }
+        //validar que este asociada a un echo
+        //if(solicitudDTO.hechoId()== null ){
+          //  throw new NoSuchElementException("La solicitud con id " + solicitudDTO.id() + "no tiene hecho asociado.");
+        //}
+        // validar existencia de hecho
+        //HechoDTO hecho = fuente.buscarHechoXId(solicitudDTO.hechoId());
+        //if (hecho == null) {
+          //  throw new NoSuchElementException("El hecho con id " + solicitudDTO.hechoId() + " no existe.");
+        //}
         // validar duplicado
         List<SolicitudDTO> solicitudesPorHecho = buscarSolicitudXHecho(solicitudDTO.hechoId());
         for (SolicitudDTO existente : solicitudesPorHecho) {
@@ -63,13 +76,14 @@ public class Fachada implements FachadaSolicitudes {
 
     @Override
     public SolicitudDTO modificar(String id , EstadoSolicitudBorradoEnum nuevoEstado,String nuevaDescripcion) throws NoSuchElementException {
-        Solicitud solicitud = extraerSolicitudDelRepositorio(id);
+        Long idLong = Long.parseLong(id); // Conversión
+        Solicitud solicitud = extraerSolicitudDelRepositorio(idLong);
 
         solicitud.setDescripcion(nuevaDescripcion);
         solicitud.setEstado(nuevoEstado);
 
         if (nuevoEstado == EstadoSolicitudBorradoEnum.ACEPTADA) {
-            fuente.censurarHecho(solicitud.getHechoId()); // 🔹 Llamada al proxy Fuente TODO
+            fuente.censurarHecho(solicitud.getHechoId()); // Llamada al proxy Fuente TODO
         }
 
         repository.save(solicitud);
@@ -88,7 +102,8 @@ public class Fachada implements FachadaSolicitudes {
 
     @Override
     public SolicitudDTO buscarSolicitudXId(String id) {
-        Solicitud solicitud = extraerSolicitudDelRepositorio(id);
+        Long idLong = Long.parseLong(id); // Conversión aquí
+        Solicitud solicitud = extraerSolicitudDelRepositorio(idLong);
         return toDto(solicitud);
     }
 
@@ -107,7 +122,7 @@ public class Fachada implements FachadaSolicitudes {
     }
 
     //METODOS PRIVADOS
-    private Solicitud extraerSolicitudDelRepositorio(String id){
+    private Solicitud extraerSolicitudDelRepositorio(Long id){
        return repository.findById(id).
                 orElseThrow(()->new NoSuchElementException("La solicitud " + id + " no se encuentra en el repositorio."));
     }

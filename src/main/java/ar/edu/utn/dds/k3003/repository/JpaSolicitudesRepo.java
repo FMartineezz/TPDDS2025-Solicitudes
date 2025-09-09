@@ -10,6 +10,7 @@ import java.util.Optional;
 
 @Repository
 @Profile("deploy")
-public interface JpaSolicitudesRepo extends JpaRepository<Solicitud,String>,SolicitudRepository {
+public interface JpaSolicitudesRepo extends JpaRepository<Solicitud, Long>, SolicitudRepository {
+    // Aquí se corrige el tipo de la clave principal a Long.
     Optional<List<Solicitud>> findByHechoId(String hechoId);
 }
