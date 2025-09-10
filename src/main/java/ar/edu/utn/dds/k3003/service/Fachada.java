@@ -95,8 +95,8 @@ public class Fachada implements FachadaSolicitudes {
     }
 
     @Override
-    public boolean estaActivo(String s) {
-        return false;
+    public boolean estaActivo(String id) {
+        return extraerSolicitudDelRepositorio(Long.parseLong(id)).getEstado() == EstadoSolicitudBorradoEnum.CREADA;
     }
 
     @Override
