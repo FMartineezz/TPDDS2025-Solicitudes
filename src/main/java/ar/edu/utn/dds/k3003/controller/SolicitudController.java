@@ -83,9 +83,9 @@ public class SolicitudController {
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/{id}/activo")
-    public ResponseEntity<Boolean> estaActiva(@PathVariable String id){
-        return ResponseEntity.ok(fachada.estaActivo(id));
+    @GetMapping("/hecho/{hechoId}")
+    public ResponseEntity<Boolean> estaActiva(@PathVariable String hechoId){
+        return ResponseEntity.ok(fachada.estaActivo(hechoId));
     }
 
 }

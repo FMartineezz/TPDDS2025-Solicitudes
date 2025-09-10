@@ -34,23 +34,15 @@ public class Fachada implements FachadaSolicitudes {
 
     @Override
     public SolicitudDTO agregar(SolicitudDTO solicitudDTO) {
-        //validar que este asociada a un echo
-        if(solicitudDTO.hechoId()== null ){
-            throw new NoSuchElementException("La solicitud con id " + solicitudDTO.id() + "no tiene hecho asociado.");
+
+        validarHecho(solicitudDTO);
+        validarDuplicado(solicitudDTO);
+
+        //Validar Hecho no censurado
+        if (!estaActivo(solicitudDTO.hechoId())){
+            throw new IllegalArgumentException("El hecho fue censurado");
         }
-        // validar existencia de hecho
-        HechoDTO hecho = fuente.buscarHechoXId(solicitudDTO.hechoId());
-        if (hecho == null) {
-            throw new NoSuchElementException("El hecho con id " + solicitudDTO.hechoId() + " no existe.");
-        }
-        // validar duplicado
-        List<SolicitudDTO> solicitudesPorHecho = buscarSolicitudXHecho(solicitudDTO.hechoId());
-        for (SolicitudDTO existente : solicitudesPorHecho) {
-            if (existente.descripcion().equalsIgnoreCase(solicitudDTO.descripcion())
-                    && existente.estado().equals(solicitudDTO.estado())) {
-                throw new KeyAlreadyExistsException("Ya existe una solicitud para ese hecho con la misma descripción y estado.");
-            }
-        }
+
         // validar antiSpam
         if (antiSpamService.esSpam(solicitudDTO.descripcion())) {
             throw new IllegalArgumentException("La descripción contiene spam.");
@@ -95,8 +87,14 @@ public class Fachada implements FachadaSolicitudes {
     }
 
     @Override
-    public boolean estaActivo(String id) {
-        return extraerSolicitudDelRepositorio(Long.parseLong(id)).getEstado() == EstadoSolicitudBorradoEnum.CREADA;
+    public boolean estaActivo(String hechoId) {
+        List<SolicitudDTO> solicitudesPorHecho = buscarSolicitudXHecho(hechoId);
+        for (SolicitudDTO solicitud : solicitudesPorHecho){
+            if (solicitud.estado()== EstadoSolicitudBorradoEnum.ACEPTADA){
+                return false;
+            }
+        }
+        return true;
     }
 
     @Override
@@ -109,6 +107,28 @@ public class Fachada implements FachadaSolicitudes {
     }
 
     //METODOS PRIVADOS
+    private void validarHecho (SolicitudDTO solicitudDTO){
+        //validar que este asociada a un hecho
+        if(solicitudDTO.hechoId()== null ){
+            throw new NoSuchElementException("La solicitud con id " + solicitudDTO.id() + "no tiene hecho asociado.");
+        }
+        // validar existencia de hecho
+        HechoDTO hecho = fuente.buscarHechoXId(solicitudDTO.hechoId());
+        if (hecho == null) {
+            throw new NoSuchElementException("El hecho con id " + solicitudDTO.hechoId() + " no existe.");
+        }
+    }
+
+    private void validarDuplicado(SolicitudDTO solicitudDTO){
+        List<SolicitudDTO> solicitudesPorHecho = buscarSolicitudXHecho(solicitudDTO.hechoId());
+        for (SolicitudDTO existente : solicitudesPorHecho) {
+            if (existente.descripcion().equalsIgnoreCase(solicitudDTO.descripcion())
+                    && existente.estado().equals(solicitudDTO.estado())) {
+                throw new KeyAlreadyExistsException("Ya existe una solicitud para ese hecho con la misma descripción y estado.");
+            }
+        }
+    }
+
     private Solicitud extraerSolicitudDelRepositorio(Long id){
        return repository.findById(id).
                 orElseThrow(()->new NoSuchElementException("La solicitud " + id + " no se encuentra en el repositorio."));
