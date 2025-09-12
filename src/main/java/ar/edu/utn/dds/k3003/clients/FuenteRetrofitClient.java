@@ -13,6 +13,6 @@ public interface FuenteRetrofitClient {
     @GET("hecho/{nombre}")
     Call<HechoDTO> get(@Path("nombre") String nombre);
 
-    @PATCH("hechos/{id}/censurar")
+    @PATCH("hecho/{id}/estado")
     Call<Void> censurar(@Path("id") String id);
 }
