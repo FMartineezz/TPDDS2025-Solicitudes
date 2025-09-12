@@ -23,7 +23,7 @@ public class SolicitudController {
     private final Counter solicitudesGetByIdCounter;
     private final Counter solicitudesPostCounter;
     private final Counter solicitudesPatchCounter;
-    private final Counter solicitudesDeleteCounter;
+
 
     @Autowired
     public SolicitudController(Fachada fachada, MeterRegistry registry) {
@@ -45,10 +45,6 @@ public class SolicitudController {
 
         this.solicitudesPatchCounter = Counter.builder("solicitudes_patch_total")
                 .description("Cantidad de modificaciones de solicitudes")
-                .register(this.registry);
-
-        this.solicitudesDeleteCounter = Counter.builder("solicitudes_delete_total")
-                .description("Cantidad de eliminaciones de solicitudes")
                 .register(this.registry);
     }
 
@@ -78,7 +74,6 @@ public class SolicitudController {
 
     @DeleteMapping
     public ResponseEntity<Void> eliminarTodas() {
-        solicitudesDeleteCounter.increment();
         fachada.vaciarSolicitudes();
         return ResponseEntity.noContent().build();
     }
