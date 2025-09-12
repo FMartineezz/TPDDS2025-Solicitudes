@@ -8,6 +8,8 @@ import ar.edu.utn.dds.k3003.facades.dtos.HechoDTO;
 import ar.edu.utn.dds.k3003.facades.dtos.SolicitudDTO;
 import ar.edu.utn.dds.k3003.model.Solicitud;
 import ar.edu.utn.dds.k3003.repository.SolicitudRepository;
+import io.micrometer.core.instrument.Counter;
+import io.micrometer.core.instrument.MeterRegistry;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,13 +26,20 @@ public class Fachada implements FachadaSolicitudes {
     public AntiSpamService antiSpamService;
     public FachadaFuente fuente;
     public SolicitudRepository repository;
+    private final MeterRegistry registry;
 
-    public Fachada(AntiSpamService antiSpamService,SolicitudRepository repository, FachadaFuente fachadaFuente){
+    private final Counter solicitudesCreadas;
+
+
+    public Fachada(AntiSpamService antiSpamService,SolicitudRepository repository, FachadaFuente fachadaFuente,MeterRegistry registry){
         this.antiSpamService = antiSpamService;
         this.repository = repository;
         this.fuente = fachadaFuente;
-    }
+        this.registry = registry;
 
+        this.solicitudesCreadas = Counter.builder("Solicitudes_creadas").
+                description("Request de post que realmente se crearon").register(this.registry);
+    }
 
     @Override
     public SolicitudDTO agregar(SolicitudDTO solicitudDTO) {
@@ -50,6 +59,7 @@ public class Fachada implements FachadaSolicitudes {
 
         Solicitud solicitud = toDomain(solicitudDTO);
         solicitud = repository.save(solicitud);
+        solicitudesCreadas.increment();
         return toDto(solicitud);
     }
 
