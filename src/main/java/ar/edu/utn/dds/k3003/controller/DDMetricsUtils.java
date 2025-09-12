@@ -20,7 +20,9 @@ public class DDMetricsUtils {
     private final StepMeterRegistry registry;
 
     public DDMetricsUtils(String appTag) {
-        // crea un registro para nuestras métricas basadas en DD
+        String apiKey = System.getenv("DDAPI");
+        System.out.println("API Key from environment: " + apiKey);
+
         var config = new DatadogConfig() {
             @Override
             public Duration step() {
