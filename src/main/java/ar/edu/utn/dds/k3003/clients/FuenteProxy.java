@@ -26,7 +26,7 @@ public class FuenteProxy implements FachadaFuente {
 
     public FuenteProxy(ObjectMapper objectMapper) {
         var env = System.getenv();
-        this.endpoint = env.getOrDefault("URL_FUENTE", "https://two025-dds-tp-fuente.onrender.com/"); // url de Fuente TODO http://localhost:8082/
+        this.endpoint = env.getOrDefault("URL_FUENTE", "https://fuentegrupo10-1.onrender.com/"); // url de Fuente TODO http://localhost:8082/
 
         var retrofit =
                 new Retrofit.Builder()
