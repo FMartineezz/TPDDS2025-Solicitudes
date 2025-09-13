@@ -2,7 +2,7 @@ package ar.edu.utn.dds.k3003.controller;
 
 import ar.edu.utn.dds.k3003.dto.SolicitudModificacionRequestDTO;
 import ar.edu.utn.dds.k3003.facades.dtos.SolicitudDTO;
-import ar.edu.utn.dds.k3003.service.Fachada;
+import ar.edu.utn.dds.k3003.app.Fachada;
 import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.MeterRegistry;
 import org.springframework.beans.factory.annotation.Autowired;
