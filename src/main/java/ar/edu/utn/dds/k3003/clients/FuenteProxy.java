@@ -62,7 +62,7 @@ public class FuenteProxy implements FachadaFuente {
     }
 
 
-    // 🚧 Métodos de FachadaFuente  no usados
+    // Métodos de FachadaFuente  no usados
     @Override
     public ColeccionDTO agregar(ColeccionDTO coleccionDTO) {
         throw new UnsupportedOperationException("No implementado en Solicitudes");
