@@ -54,6 +54,7 @@ public class SolicitudController {
                 .register(this.registry);
         this.responseAplicationTimer = Timer.builder("solicitudes_response_application_timer")
                 .description("Tiempo que tarda en responder a la app que nos consume")
+                .publishPercentiles(95)
                 .register(this.registry);
     }
 
