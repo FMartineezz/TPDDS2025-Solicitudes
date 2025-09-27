@@ -5,10 +5,12 @@ import ar.edu.utn.dds.k3003.facades.dtos.SolicitudDTO;
 import ar.edu.utn.dds.k3003.app.Fachada;
 import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.Timer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashSet;
 import java.util.List;
 
 @RestController
@@ -23,7 +25,8 @@ public class SolicitudController {
     private final Counter solicitudesGetByIdCounter;
     private final Counter solicitudesPostCounter;
     private final Counter solicitudesPatchCounter;
-
+    private final Timer responseTimer;
+    private final Timer responseAplicationTimer;
 
     @Autowired
     public SolicitudController(Fachada fachada, MeterRegistry registry) {
@@ -46,30 +49,40 @@ public class SolicitudController {
         this.solicitudesPatchCounter = Counter.builder("solicitudes_patch_total")
                 .description("Cantidad de modificaciones de solicitudes")
                 .register(this.registry);
+        this.responseTimer = Timer.builder("solicitudes_response_time")
+                .description("Tiempo de respuesta que tarda entre que llega la query hasta tirar la response")
+                .register(this.registry);
+        this.responseAplicationTimer = Timer.builder("solicitudes_response_application_timer")
+                .description("Tiempo que tarda en responder a la app que nos consume")
+                .register(this.registry);
     }
 
     @GetMapping
     public ResponseEntity<List<SolicitudDTO>> buscarPorHecho(@RequestParam("hecho") String hechoId) {
+        return responseTimer.record(()-> {
         solicitudesGetCounter.increment();
-        return ResponseEntity.ok(fachada.buscarSolicitudXHecho(hechoId));
+        return ResponseEntity.ok(fachada.buscarSolicitudXHecho(hechoId));});
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<SolicitudDTO> buscarPorId(@PathVariable String id) {
+        return responseTimer.record(()->{
         solicitudesGetByIdCounter.increment();
-        return ResponseEntity.ok(fachada.buscarSolicitudXId(id));
+        return ResponseEntity.ok(fachada.buscarSolicitudXId(id));});
     }
 
     @PostMapping
     public ResponseEntity<SolicitudDTO> agregar(@RequestBody SolicitudDTO dto) {
+        return responseTimer.record(()->{
         solicitudesPostCounter.increment();
-        return ResponseEntity.ok(fachada.agregar(dto));
+        return ResponseEntity.ok(fachada.agregar(dto));});
     }
 
     @PatchMapping("/{id}")
     public ResponseEntity<SolicitudDTO> modificar(@PathVariable String id, @RequestBody SolicitudModificacionRequestDTO body) {
+        return responseTimer.record(()->{
         solicitudesPatchCounter.increment();
-        return ResponseEntity.ok(fachada.modificar(id, body.getEstado(), body.getDescripcion()));
+        return ResponseEntity.ok(fachada.modificar(id, body.getEstado(), body.getDescripcion()));});
     }
 
     @DeleteMapping
@@ -79,8 +92,15 @@ public class SolicitudController {
     }
 
     @GetMapping("/hecho/{hechoId}")
-    public ResponseEntity<Boolean> estaActiva(@PathVariable String hechoId){
-        return ResponseEntity.ok(fachada.estaActivo(hechoId));
+        public ResponseEntity<Boolean> estaActiva(@PathVariable String hechoId){
+        return responseAplicationTimer.record(()->{
+        return ResponseEntity.ok(fachada.estaActivo(hechoId));});
+    }
+
+    @GetMapping("/hechos")
+        public ResponseEntity<HashSet<String>> hechosConSolicitudes (){
+        return responseAplicationTimer.record(()->{
+        return ResponseEntity.ok(fachada.todosLosHechosId());});
     }
 
 }

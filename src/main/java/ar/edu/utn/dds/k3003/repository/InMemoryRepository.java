@@ -4,10 +4,7 @@ import ar.edu.utn.dds.k3003.model.Solicitud;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Repository;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Repository
@@ -53,5 +50,14 @@ public class InMemoryRepository implements SolicitudRepository {
     @Override
     public void deleteAll() {
         solicitudes.clear();
+    }
+
+    @Override
+    public HashSet<String> findAllHechosId(){
+        HashSet<String> hechosIds = new HashSet<>();
+        for(Solicitud solicitud : solicitudes ){
+            hechosIds.add(solicitud.getHechoId());
+        }
+        return hechosIds;
     }
 }

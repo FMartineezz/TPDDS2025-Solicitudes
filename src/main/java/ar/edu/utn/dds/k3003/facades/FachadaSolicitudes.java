@@ -2,6 +2,8 @@ package ar.edu.utn.dds.k3003.facades;
 
 import ar.edu.utn.dds.k3003.facades.dtos.EstadoSolicitudBorradoEnum;
 import ar.edu.utn.dds.k3003.facades.dtos.SolicitudDTO;
+
+import java.util.HashSet;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -15,6 +17,8 @@ public interface FachadaSolicitudes {
     SolicitudDTO buscarSolicitudXId(String var1);
 
     boolean estaActivo(String var1);
+
+    HashSet<String> todosLosHechosId();
 
     void setFachadaFuente(FachadaFuente var1);
 }

@@ -14,9 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.management.openmbean.KeyAlreadyExistsException;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -113,6 +111,15 @@ public class Fachada implements FachadaSolicitudes {
 
     public void vaciarSolicitudes() {
         repository.deleteAll();
+    }
+
+    public HashSet<String> todosLosHechosId(){
+        List<Solicitud> solicitudes = repository.findAll();
+        HashSet<String> hechosId = new HashSet<String>();
+        for( Solicitud solicitud : solicitudes){
+            hechosId.add(solicitud.getHechoId());
+        }
+        return hechosId; //TODO REMPLAZAR POR EL METODO DIRECTO DESDE EL REPOSITRY
     }
 
     //METODOS PRIVADOS
