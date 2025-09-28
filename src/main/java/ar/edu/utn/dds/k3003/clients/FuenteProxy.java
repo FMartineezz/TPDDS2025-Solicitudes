@@ -42,13 +42,25 @@ public class FuenteProxy implements FachadaFuente {
     public HechoDTO buscarHechoXId(String hechoId) throws NoSuchElementException {
         Response<HechoDTO> response = service.get(hechoId).execute();
 
+        if (!response.isSuccessful()) {
+            throw new RuntimeException("Error conectándose con el componente Fuente");
+        }
+
+        HechoDTO hecho = response.body();
+        if (hecho == null) {
+            throw new NoSuchElementException("No se encontró el hecho " + hechoId);
+        }
+
+        return hecho;
+        /* Response<HechoDTO> response = service.get(hechoId).execute();
+
         if (response.isSuccessful()) {
             return response.body();
         }
         if (response.code() == HttpStatus.NOT_FOUND.getCode()) {
             throw new NoSuchElementException("No se encontró el hecho " + hechoId);
         }
-        throw new RuntimeException("Error conectándose con el componente Fuente");
+        throw new RuntimeException("Error conectándose con el componente Fuente");*/
     }
 
     @SneakyThrows
