@@ -13,7 +13,7 @@ RUN chmod +x ./mvnw
 RUN ./mvnw clean package -DskipTests
 
 # Stage 2: Create the final Docker image using OpenJDK 19
-FROM openjdk:21-oracle
+FROM eclipse-temurin:21-jdk
 VOLUME /tmp
 
 # Definís el perfil de Spring que se usará al arrancar
