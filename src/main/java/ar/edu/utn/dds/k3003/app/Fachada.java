@@ -69,7 +69,7 @@ public class Fachada implements FachadaSolicitudes {
         solicitud.setEstado(nuevoEstado);
 
         if (nuevoEstado == EstadoSolicitudBorradoEnum.ACEPTADA) {
-            fuente.censurarHecho(solicitud.getHechoId()); // Llamada al proxy Fuente TODO
+            fuente.censurarHecho(solicitud.getHechoId());
         }
 
         repository.save(solicitud);
