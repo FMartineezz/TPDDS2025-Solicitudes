@@ -26,7 +26,7 @@ public class FuenteProxy implements FachadaFuente {
 
     public FuenteProxy(ObjectMapper objectMapper) {
         var env = System.getenv();
-        this.endpoint = env.getOrDefault("URL_FUENTE", "https://fuentegrupo10-1.onrender.com/"); // url de Fuente TODO http://localhost:8082/
+        this.endpoint = env.getOrDefault("URL_FUENTE", "https://fuentegrupo10-1.onrender.com/");
 
         var retrofit =
                 new Retrofit.Builder()
@@ -52,15 +52,6 @@ public class FuenteProxy implements FachadaFuente {
         }
 
         return hecho;
-        /* Response<HechoDTO> response = service.get(hechoId).execute();
-
-        if (response.isSuccessful()) {
-            return response.body();
-        }
-        if (response.code() == HttpStatus.NOT_FOUND.getCode()) {
-            throw new NoSuchElementException("No se encontró el hecho " + hechoId);
-        }
-        throw new RuntimeException("Error conectándose con el componente Fuente");*/
     }
 
     @SneakyThrows
