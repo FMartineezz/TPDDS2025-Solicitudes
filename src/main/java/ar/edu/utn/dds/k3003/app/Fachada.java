@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.management.openmbean.KeyAlreadyExistsException;
+import java.security.InvalidParameterException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -49,12 +50,12 @@ public class Fachada implements FachadaSolicitudes {
 
         //Validar Hecho no censurado
         if (!estaActivo(solicitudDTO.hechoId())){
-            throw new IllegalArgumentException("El hecho fue censurado");
+            throw new InvalidParameterException("El hecho fue censurado");
         }
 
         // validar antiSpam
         if (antiSpamService.esSpam(solicitudDTO.descripcion())) {
-            throw new IllegalArgumentException("La descripción contiene spam.");
+            throw new InvalidParameterException("La descripción contiene spam.");
         }
 
         Solicitud solicitud = toDomain(solicitudDTO);

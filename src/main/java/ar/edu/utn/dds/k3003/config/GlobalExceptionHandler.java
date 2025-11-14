@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
+import javax.management.openmbean.KeyAlreadyExistsException;
 import java.security.InvalidParameterException;
 import java.util.NoSuchElementException;
 import java.util.HashMap;
@@ -36,4 +37,13 @@ public class GlobalExceptionHandler {
         response.put("message", "An unexpected error occurred");
         return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
     }
+
+    @ExceptionHandler(KeyAlreadyExistsException.class)
+    public  ResponseEntity<Map<String,String>> handleKeyAlreadyExistsException(KeyAlreadyExistsException e){
+        Map<String, String> response = new HashMap<>();
+        response.put("error", "DuplicateKey");
+        response.put("message", e.getMessage());
+        return new ResponseEntity<>(response, HttpStatus.CONFLICT);
+    }
+
 }
