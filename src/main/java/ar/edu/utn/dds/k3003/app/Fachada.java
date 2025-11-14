@@ -1,6 +1,8 @@
 package ar.edu.utn.dds.k3003.app;
 
 import ar.edu.utn.dds.k3003.antiSpam.AntiSpamService;
+import ar.edu.utn.dds.k3003.busqueda.BusquedaPort;
+import ar.edu.utn.dds.k3003.clients.BusquedaProxy;
 import ar.edu.utn.dds.k3003.facades.FachadaFuente;
 import ar.edu.utn.dds.k3003.facades.FachadaSolicitudes;
 import ar.edu.utn.dds.k3003.facades.dtos.EstadoSolicitudBorradoEnum;
@@ -20,19 +22,20 @@ import java.util.stream.Collectors;
 @Service
 @Transactional
 public class Fachada implements FachadaSolicitudes {
-    public AntiSpamService antiSpamService;
-    public FachadaFuente fuente;
-    public SolicitudRepository repository;
+    private AntiSpamService antiSpamService;
+    private FachadaFuente fuente;
+    private SolicitudRepository repository;
     private final MeterRegistry registry;
-
+    private BusquedaPort busquedaService;
     private final Counter solicitudesCreadas;
 
 
-    public Fachada(AntiSpamService antiSpamService,SolicitudRepository repository, FachadaFuente fachadaFuente,MeterRegistry registry){
+    public Fachada(AntiSpamService antiSpamService, SolicitudRepository repository, FachadaFuente fachadaFuente, MeterRegistry registry, BusquedaPort service){
         this.antiSpamService = antiSpamService;
         this.repository = repository;
         this.fuente = fachadaFuente;
         this.registry = registry;
+        this.busquedaService = service;
 
         this.solicitudesCreadas = Counter.builder("Solicitudes_creadas").
                 description("Request de post que realmente se crearon").register(this.registry);
@@ -70,6 +73,7 @@ public class Fachada implements FachadaSolicitudes {
 
         if (nuevoEstado == EstadoSolicitudBorradoEnum.ACEPTADA) {
             fuente.censurarHecho(solicitud.getHechoId());
+            busquedaService.hideHecho(toDto(solicitud));
         }
 
         repository.save(solicitud);
