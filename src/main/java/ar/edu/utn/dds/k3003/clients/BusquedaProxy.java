@@ -5,6 +5,7 @@ import ar.edu.utn.dds.k3003.facades.dtos.SolicitudDTO;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
 import org.springframework.context.annotation.Profile;
+import org.springframework.stereotype.Service;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.jackson.JacksonConverterFactory;
@@ -13,6 +14,7 @@ import retrofit2.converter.jackson.JacksonConverterFactory;
 
 
 @Profile("deploy")
+@Service
 public class BusquedaProxy implements BusquedaPort {
     private String endpoint;
     private BusquedaRetrofitClient service;
